@@ -1,1 +1,138 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cha-Cha's Cuisine — Authentic Filipino Food in Fresno, CA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #fff9f4; color: #2c2c54; }
+    h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .hero {
+      background: linear-gradient(135deg, #FF6B6B, #FF9966);
+      color: white; text-align: center; padding: 100px 20px 80px;
+    }
+    .hero h1 { font-size: 3.5rem; margin-bottom: 16px; }
+    .hero p { font-size: 1.3rem; opacity: 0.95; max-width: 600px; margin: 0 auto 32px; }
+    .btn-call {
+      display: inline-block; background: white; color: #FF6B6B;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+      font-size: 1.2rem; padding: 16px 36px; border-radius: 50px;
+      text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .btn-call:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+    .steps { display: flex; justify-content: center; gap: 40px; padding: 60px 20px; flex-wrap: wrap; }
+    .step { text-align: center; max-width: 200px; }
+    .step-icon { font-size: 3rem; margin-bottom: 12px; }
+    .step h3 { margin-bottom: 8px; }
+    .step p { font-size: 0.95rem; color: #666; }
+    .menu-section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
+    .menu-section h2 { text-align: center; font-size: 2.2rem; margin-bottom: 40px; color: #FF6B6B; }
+    .category-title {
+      font-size: 1.5rem; margin: 40px 0 20px; padding-bottom: 8px;
+      border-bottom: 3px solid #FF9966; display: inline-block;
+    }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+    .menu-card {
+      background: white; border-radius: 18px; overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: transform 0.2s;
+    }
+    .menu-card:hover { transform: translateY(-4px); }
+    .menu-card img { width: 100%; height: 200px; object-fit: cover; background: #f0e6dc; }
+    .menu-card-body { padding: 20px; }
+    .menu-card-body h3 { font-size: 1.2rem; margin-bottom: 8px; }
+    .menu-card-body p { font-size: 0.9rem; color: #666; margin-bottom: 12px; line-height: 1.5; }
+    .menu-card-price { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1.3rem; color: #FF6B6B; }
+    .no-image {
+      height: 200px; background: linear-gradient(135deg, #FF6B6B22, #FF996622);
+      display: flex; align-items: center; justify-content: center; font-size: 3rem;
+    }
+    .footer { background: #2c2c54; color: white; text-align: center; padding: 60px 20px; }
+    .footer h2 { font-size: 2rem; margin-bottom: 12px; }
+    .footer .phone { font-size: 1.8rem; font-weight: 700; margin-bottom: 24px; }
+    .footer a { color: #FF9966; text-decoration: none; }
+    .footer .info { opacity: 0.7; margin-top: 20px; font-size: 0.9rem; line-height: 1.8; }
+    .loading { text-align: center; padding: 40px; color: #999; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1>Cha-Cha's Cuisine</h1>
+    <p>Authentic Filipino Food, Cooked with Love & Delivered to Your Door in Fresno, CA.</p>
+    <a href="tel:+15591234567" class="btn-call">📞 Call to Order Now</a>
+  </section>
+  <section class="steps">
+    <div class="step">
+      <div class="step-icon">📋</div>
+      <h3>1. Browse Menu</h3>
+      <p>Check out our delicious Filipino dishes below</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">📞</div>
+      <h3>2. Call to Order</h3>
+      <p>Ring us at (559) 123-4567</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">🛵</div>
+      <h3>3. We Cook & Deliver</h3>
+      <p>Fresh, hot food delivered to your door</p>
+    </div>
+  </section>
+  <section class="menu-section">
+    <h2>Our Menu</h2>
+    <div id="menu-container" class="loading">Loading menu...</div>
+  </section>
+  <section class="footer">
+    <h2>📞 Ready to Order?</h2>
+    <div class="phone"><a href="tel:+15591234567">(559) 123-4567</a></div>
+    <div class="info">
+      <strong>Delivery Area:</strong> Fresno, CA & surrounding areas<br>
+      <strong>Hours:</strong> Tuesday–Sunday, 11:00 AM – 8:00 PM<br>
+      <strong>Call ahead</strong> for large orders & catering!
+    </div>
+  </section>
+  <script>
+    const categoryLabels = { "Main Dish": "Main Dishes", "Dessert": "Desserts", "Side Order": "Side Orders" };
+    async function loadMenu() {
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        const container = document.getElementById('menu-container');
+        container.innerHTML = '';
+        container.className = '';
+        if (Object.keys(data).length === 0) {
+          container.innerHTML = '<p style="text-align:center;color:#999;">Menu coming soon!</p>';
+          return;
+        }
+        for (const [category, items] of Object.entries(data)) {
+          const title = document.createElement('h3');
+          title.className = 'category-title';
+          title.textContent = categoryLabels[category] || category;
+          container.appendChild(title);
+          const grid = document.createElement('div');
+          grid.className = 'menu-grid';
+          for (const item of items) {
+            const card = document.createElement('div');
+            card.className = 'menu-card';
+            card.innerHTML = `
+              ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" loading="lazy">` : `<div class="no-image">🍽️</div>`}
+              <div class="menu-card-body">
+                <h3>${item.name}</h3>
+                <p>${item.description}</p>
+                <div class="menu-card-price">$${Number(item.price).toFixed(2)}</div>
+              </div>`;
+            grid.appendChild(card);
+          }
+          container.appendChild(grid);
+        }
+      } catch (e) {
+        document.getElementById('menu-container').innerHTML = '<p style="text-align:center;color:#999;">Could not load menu. Please try again later.</p>';
+      }
+    }
+    loadMenu();
+  </script>
+</body>
+</html>
